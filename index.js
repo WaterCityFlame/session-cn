@@ -76,6 +76,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Boolean} [options.proxy]
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
+ * @param {Boolean} [options.allowUnsigned] Enable/disable allowing unsigned sessions
  * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
  * @param {String|Array} [options.secret] Secret for signing session ID
  * @param {Object} [options.store=MemoryStore] Session store
@@ -107,6 +108,9 @@ function session(options) {
 
   // get the rolling session option
   var rollingSessions = Boolean(opts.rolling)
+
+  // get the allow unsigned session option
+  var allowUnsigned = opts.allowUnsigned || false;
 
   // get the save uninitialized session option
   var saveUninitializedSession = opts.saveUninitialized
@@ -214,7 +218,7 @@ function session(options) {
     req.sessionStore = store;
 
     // get the session ID from the cookie
-    var cookieId = req.sessionID = getcookie(req, name, secrets);
+    var cookieId = req.sessionID = getcookie(req, name, secrets, allowUnsigned);
 
     // set-cookie
     onHeaders(res, function(){
@@ -510,7 +514,7 @@ function generateSessionId(sess) {
  * @private
  */
 
-function getcookie(req, name, secrets) {
+function getcookie(req, name, secrets, allowUnsigned) {
   var header = req.headers.cookie;
   var raw;
   var val;
@@ -566,7 +570,7 @@ function getcookie(req, name, secrets) {
     }
   }
 
-  return val;
+  return allowUnsigned ? val || raw : val;
 }
 
 /**
