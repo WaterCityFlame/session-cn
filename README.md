@@ -237,6 +237,17 @@ The default value is `false`.
 set to `false`, the cookie will not be set on a response with an uninitialized
 session.
 
+##### alternateTokenValue
+
+Function that derives an alternate token value from the request object if no
+value can be found in the cookie header. This allows compatibility with other
+authentication types while maintaining consistency.
+
+`request => string | null | undefined`
+
+The default value is `null` and will be skipped unless a function is provided
+to the options object matching the above signature.
+
 ##### saveUninitialized
 
 Forces a session that is "uninitialized" to be saved to the store. A session is
