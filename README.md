@@ -245,8 +245,15 @@ authentication types while maintaining consistency.
 
 `request => string | null | undefined`
 
-The default value is `null` and will be skipped unless a function is provided
+The default value is `undefined` and it will be skipped unless a function is provided
 to the options object matching the above signature.
+
+##### allowUnsigned
+
+Allows raw unsigned cookie values to be handled by the session middleware. Mostly
+designed for compatibility with legacy sessions and edge case scenarios.
+
+The default value is `false`.
 
 ##### saveUninitialized
 
