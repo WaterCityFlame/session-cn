@@ -218,7 +218,7 @@ function session(options) {
     req.sessionStore = store;
 
     // get the session ID from the cookie
-    var cookieId = req.sessionID = getcookie(req, name, secrets);
+    var cookieId = req.sessionID = getcookie(req, name, secrets, alternateTokenValue);
 
     // set-cookie
     onHeaders(res, function(){
@@ -514,7 +514,7 @@ function generateSessionId(sess) {
  * @private
  */
 
-function getcookie(req, name, secrets) {
+function getcookie(req, name, secrets, alternateTokenValue) {
   var header = req.headers.cookie;
   var raw;
   var val;
