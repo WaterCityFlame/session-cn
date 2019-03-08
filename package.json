@@ -21,6 +21,7 @@
     "uid-safe": "~2.1.5"
   },
   "devDependencies": {
+    "@types/node": "11.10.5",
     "after": "0.8.2",
     "cookie-parser": "1.4.3",
     "eslint": "3.19.0",
