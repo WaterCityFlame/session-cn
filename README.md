@@ -237,6 +237,13 @@ The default value is `false`.
 set to `false`, the cookie will not be set on a response with an uninitialized
 session.
 
+##### allowUnsigned
+
+Allows raw unsigned cookie values to be handled by the session middleware. Mostly
+designed for compatibility with legacy sessions and edge case scenarios.
+
+The default value is `false`.
+
 ##### saveUninitialized
 
 Forces a session that is "uninitialized" to be saved to the store. A session is
