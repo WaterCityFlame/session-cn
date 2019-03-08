@@ -1,9 +1,24 @@
-# express-session
+# express-session-cn
 
-[![NPM Version][npm-version-image]][npm-url]
-[![NPM Downloads][npm-downloads-image]][node-url]
-[![Build Status][travis-image]][travis-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
+This is a fork of the popular [express-session](https://github.com/expressjs/session)
+library with some added features for legacy compatibility and authentication types.
+Currently there are only a few main goals of this fork which are as follows:
+
+- Ability to define alternate token locations when no cookie value found for interop
+  with other methods of sending authentication.
+
+- Ability to determine whether a set cookie header should be returned to a client
+  based on information obtained from the request.
+
+- Allow unsigned cookies values to be processed for migrating user sessions from
+  legacy systems.
+
+- Expose some helper functions for dealing with sessions outside of the middleware.
+
+- Maintain accurate type information.
+
+Since the original library is in maintenance mode I will do my best to keep this
+library and type definitions at feature parity and version match as best I can.
 
 ## Installation
 
@@ -12,13 +27,13 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```sh
-$ npm install express-session
+$ npm install express-session-cn
 ```
 
 ## API
 
 ```js
-var session = require('express-session')
+var session = require('express-session-cn')
 ```
 
 ### session(options)
@@ -42,7 +57,7 @@ For a list of stores, see [compatible session stores](#compatible-session-stores
 
 #### Options
 
-`express-session` accepts these properties in the options object.
+`express-session-cn` accepts these properties in the options object.
 
 ##### cookie
 
@@ -780,12 +795,12 @@ based session store. Supports all backends supported by Fortune (MongoDB, Redis,
 
 ## Example
 
-A simple example using `express-session` to store page views for a user.
+A simple example using `express-session-cn` to store page views for a user.
 
 ```js
 var express = require('express')
 var parseurl = require('parseurl')
-var session = require('express-session')
+var session = require('express-session-cn')
 
 var app = express()
 
@@ -821,12 +836,3 @@ app.get('/bar', function (req, res, next) {
 ## License
 
 [MIT](LICENSE)
-
-[coveralls-image]: https://badgen.net/coveralls/c/github/expressjs/session/master
-[coveralls-url]: https://coveralls.io/r/expressjs/session?branch=master
-[node-url]: https://nodejs.org/en/download
-[npm-downloads-image]: https://badgen.net/npm/dm/express-session
-[npm-url]: https://npmjs.org/package/express-session
-[npm-version-image]: https://badgen.net/npm/v/express-session
-[travis-image]: https://badgen.net/travis/expressjs/session/master
-[travis-url]: https://travis-ci.org/expressjs/session
