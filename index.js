@@ -51,6 +51,7 @@ exports.MemoryStore = MemoryStore;
 /**
  * Expose helper functions.
  */
+
 exports.signCookie = signcookie;
 exports.unsignCookie = unsigncookie;
 
@@ -683,6 +684,7 @@ function setcookie(res, name, val, secret, options) {
  * @returns {String|Boolean}
  * @public
  */
+
 function unsigncookie(val, secrets) {
   for (var i = 0; i < secrets.length; i++) {
     var result = signature.unsign(val, secrets[i]);
@@ -703,6 +705,7 @@ function unsigncookie(val, secrets) {
  * @returns {String}
  * @public
  */
+
 function signcookie(val, secret) {
   return signature.sign(val, secret);
 }
