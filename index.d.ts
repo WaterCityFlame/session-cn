@@ -52,8 +52,6 @@ declare global {
 }
 
 declare function session(options?: session.SessionOptions): express.RequestHandler;
-declare function unsignCookie(val: string, secrets: string[]): string;
-declare function signCookie(val: string, secret: string): string;
 
 declare namespace session {
   interface SessionOptions {
@@ -105,6 +103,9 @@ declare namespace session {
     clear: (callback?: (err?: any) => void) => void;
     touch: (sid: string, session: Express.SessionData, callback?: (err?: any) => void) => void;
   }
+
+  function unsignCookie(val: string, secrets: string[]): string;
+  function signCookie(val: string, secret: string): string;
 }
 
 export = session;
