@@ -82,6 +82,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Boolean} [options.proxy]
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
+ * @param {Function} [options.alternateTokenValue] Function for fetching alternate token value
  * @param {Boolean} [options.allowUnsigned] Enable/disable allowing unsigned sessions
  * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
  * @param {Function} [options.skipCookie] Function to determine if a cookie should be returned
@@ -115,6 +116,9 @@ function session(options) {
 
   // get the rolling session option
   var rollingSessions = Boolean(opts.rolling)
+
+  // get the alternate token value function option
+  var alternateTokenValue = opts.alternateTokenValue;
 
   // get the allow unsigned session option
   var allowUnsigned = opts.allowUnsigned || false;
@@ -228,7 +232,7 @@ function session(options) {
     req.sessionStore = store;
 
     // get the session ID from the cookie
-    var cookieId = req.sessionID = getcookie(req, name, secrets, allowUnsigned);
+    var cookieId = req.sessionID = getcookie(req, name, secrets, allowUnsigned, alternateTokenValue);
 
     // set-cookie
     onHeaders(res, function(){
@@ -528,7 +532,7 @@ function generateSessionId(sess) {
  * @private
  */
 
-function getcookie(req, name, secrets, allowUnsigned) {
+function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
   var header = req.headers.cookie;
   var raw;
   var val;
@@ -538,6 +542,10 @@ function getcookie(req, name, secrets, allowUnsigned) {
     var cookies = cookie.parse(header);
 
     raw = cookies[name];
+
+    if (!raw && alternateTokenValue) {
+      raw = alternateTokenValue(req);
+    }
 
     if (raw) {
       if (raw.substr(0, 2) === 's:') {

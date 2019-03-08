@@ -237,6 +237,17 @@ The default value is `false`.
 set to `false`, the cookie will not be set on a response with an uninitialized
 session.
 
+##### alternateTokenValue
+
+Function that derives an alternate token value from the request object if no
+value can be found in the cookie header. This allows compatibility with other
+authentication types while maintaining consistency.
+
+`request => string | null | undefined`
+
+The default value is `undefined` and it will be skipped unless a function is provided
+to the options object matching the above signature.
+
 ##### allowUnsigned
 
 Allows raw unsigned cookie values to be handled by the session middleware. Mostly
