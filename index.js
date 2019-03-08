@@ -3,6 +3,7 @@
  * Copyright(c) 2010 Sencha Inc.
  * Copyright(c) 2011 TJ Holowaychuk
  * Copyright(c) 2014-2015 Douglas Christopher Wilson
+ * Copyright(c) 2019 Jordan Gignac
  * MIT Licensed
  */
 
@@ -75,11 +76,11 @@ var defer = typeof setImmediate === 'function'
 /**
  * Setup session store with the given `options`.
  *
- * @param {Object} [options]
+ * @param {Object} [options] Config options
  * @param {Object} [options.cookie] Options for cookie
- * @param {Function} [options.genid]
+ * @param {Function} [options.genid] Function for generating new session ids
  * @param {String} [options.name=connect.sid] Session ID cookie name
- * @param {Boolean} [options.proxy]
+ * @param {Boolean} [options.proxy] Sets the reverse proxy trust level when using secure cookies
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
  * @param {Function} [options.alternateTokenValue] Function for fetching alternate token value
@@ -88,7 +89,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Function} [options.skipCookie] Function to determine if a cookie should be returned
  * @param {String|Array} [options.secret] Secret for signing session ID
  * @param {Object} [options.store=MemoryStore] Session store
- * @param {String} [options.unset]
+ * @param {String} [options.unset] Define how to handle session data when req.session is unset
  * @return {Function} middleware
  * @public
  */
