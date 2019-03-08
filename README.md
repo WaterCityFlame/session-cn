@@ -1,8 +1,8 @@
 # express-session-cn
 
 This is a fork of the popular [express-session](https://github.com/expressjs/session)
-library with some added features for legacy compatibility and authentication types.
-Currently there are only a few main goals of this fork which are as follows:
+library with some added features for legacy compatibility and authentication. Currently
+there are only a few main goals of this fork which are as follows:
 
 - Ability to define alternate token locations when no cookie value found for interop
   with other methods of sending authentication.
@@ -10,15 +10,14 @@ Currently there are only a few main goals of this fork which are as follows:
 - Ability to determine whether a set cookie header should be returned to a client
   based on information obtained from the request.
 
-- Allow unsigned cookies values to be processed for migrating user sessions from
-  legacy systems.
-
 - Expose some helper functions for dealing with sessions outside of the middleware.
+
+- Allow unsigned cookie values to be processed for migrating user sessions.
 
 - Maintain accurate type information.
 
 Since the original library is in maintenance mode I will do my best to keep this
-library and type definitions at feature parity and version match as best I can.
+library and type definition at feature parity and version match as best I can.
 
 ## Installation
 
