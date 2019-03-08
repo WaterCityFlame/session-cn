@@ -48,6 +48,12 @@ exports.Session = Session;
 exports.MemoryStore = MemoryStore;
 
 /**
+ * Expose helper functions.
+ */
+exports.signCookie = signcookie;
+exports.unsignCookie = unsigncookie;
+
+/**
  * Warning message for `MemoryStore` usage in production.
  * @private
  */
@@ -641,7 +647,7 @@ function issecure(req, trustProxy) {
  */
 
 function setcookie(res, name, val, secret, options) {
-  var signed = 's:' + signature.sign(val, secret);
+  var signed = 's:' + signcookie(val, secret);
   var data = cookie.serialize(name, signed, options);
 
   debug('set-cookie %s', data);
@@ -658,7 +664,7 @@ function setcookie(res, name, val, secret, options) {
  * @param {String} val
  * @param {Array} secrets
  * @returns {String|Boolean}
- * @private
+ * @public
  */
 function unsigncookie(val, secrets) {
   for (var i = 0; i < secrets.length; i++) {
@@ -670,4 +676,16 @@ function unsigncookie(val, secrets) {
   }
 
   return false;
+}
+
+/**
+ * Sign the given `val` with `secret`.
+ *
+ * @param {String} val
+ * @param {String} secret
+ * @returns {String}
+ * @public
+ */
+function signcookie(val, secret) {
+  return signature.sign(val, secret);
 }
