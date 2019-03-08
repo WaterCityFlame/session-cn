@@ -84,6 +84,7 @@ var defer = typeof setImmediate === 'function'
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
  * @param {Boolean} [options.allowUnsigned] Enable/disable allowing unsigned sessions
  * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
+ * @param {Function} [options.skipCookie] Function to determine if a cookie should be returned
  * @param {String|Array} [options.secret] Secret for signing session ID
  * @param {Object} [options.store=MemoryStore] Session store
  * @param {String} [options.unset]
@@ -120,6 +121,9 @@ function session(options) {
 
   // get the save uninitialized session option
   var saveUninitializedSession = opts.saveUninitialized
+
+  // get the skip cookie function option
+  var skipCookie = opts.skipCookie;
 
   // get the cookie signing secret
   var secret = opts.secret
@@ -450,6 +454,10 @@ function session(options) {
     function shouldSetCookie(req) {
       // cannot set cookie without a session ID
       if (typeof req.sessionID !== 'string') {
+        return false;
+      }
+
+      if (skipCookie && skipCookie(req)) {
         return false;
       }
 

@@ -262,6 +262,17 @@ will add an empty Passport object to the session for use after a user is
 authenticated, which will be treated as a modification to the session, causing
 it to be saved. *This has been fixed in PassportJS 0.3.0*
 
+##### skipCookie
+
+Function that can skip the return of set cookie headers to the client depending
+on request object values. This allows compatibility with other authentication
+types while maintaining consistency.
+
+`request => boolean`
+
+The default value is `undefined` and it will be skipped unless a function is
+provided to the options object matching the above signature.
+
 ##### secret
 
 **Required option**
