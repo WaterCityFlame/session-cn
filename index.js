@@ -551,7 +551,7 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
 
     if (raw) {
       if (raw.substr(0, 2) === 's:') {
-        val = unsigncookie(raw.slice(2), secrets);
+        val = unsigncookie(raw, secrets);
 
         if (val === false) {
           debug('cookie signature invalid');
@@ -578,7 +578,7 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
 
     if (raw) {
       if (raw.substr(0, 2) === 's:') {
-        val = unsigncookie(raw.slice(2), secrets);
+        val = unsigncookie(raw, secrets);
 
         if (val) {
           deprecate('cookie should be available in req.headers.cookie');
@@ -686,8 +686,9 @@ function setcookie(res, name, val, secret, options) {
  */
 
 function unsigncookie(val, secrets) {
+  var str = val.slice(2);
   for (var i = 0; i < secrets.length; i++) {
-    var result = signature.unsign(val, secrets[i]);
+    var result = signature.unsign(str, secrets[i]);
 
     if (result !== false) {
       return result;
