@@ -665,7 +665,7 @@ function issecure(req, trustProxy) {
  */
 
 function setcookie(res, name, val, secret, options) {
-  var signed = 's:' + signcookie(val, secret);
+  var signed = signcookie(val, secret);
   var data = cookie.serialize(name, signed, options);
 
   debug('set-cookie %s', data);
@@ -708,5 +708,5 @@ function unsigncookie(val, secrets) {
  */
 
 function signcookie(val, secret) {
-  return signature.sign(val, secret);
+  return 's:' + signature.sign(val, secret);
 }
