@@ -1,6 +1,11 @@
-unreleased
+1.15.7 / 2019-04-01
 ==========
 
+  * Adds a number of custom legacy helpers
+    - Export of signing functions for use outside module
+    - `allowUnsigned` for compatibility with unsigned cookies
+    - `alternateTokenValue` for additional cookie header locations
+    - `skipCookie` for better control on when cookies should be sent
   * Catch invalid `cookie.maxAge` value earlier
   * Deprecate setting `cookie.maxAge` to a `Date` object
   * Fix issue where `resave: false` may not save altered sessions
