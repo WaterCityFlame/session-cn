@@ -1,4 +1,4 @@
-1.15.7 / 2019-04-01
+1.15.8 / 2019-04-01
 ==========
 
   * Adds a number of custom legacy helpers

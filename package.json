@@ -1,6 +1,6 @@
 {
   "name": "express-session-cn",
-  "version": "1.15.7",
+  "version": "1.15.8",
   "description": "Simple session middleware for Express",
   "author": "Jordan Gignac <jordangdevelop@gmail.com> (https://jordang.dev)",
   "contributors": [
@@ -35,7 +35,8 @@
     "session/",
     "HISTORY.md",
     "LICENSE",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "engines": {
     "node": ">= 0.8.0"
