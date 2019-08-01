@@ -65,7 +65,7 @@ declare namespace session {
     proxy?: boolean;
     saveUninitialized?: boolean;
     alternateTokenValue?: (req: express.Request) => string | null | undefined;
-    skipCookie?: (req: express.Request) => boolean;
+    skipCookie?: (req: express.Request, res: express.Response, next: express.NextFunction) => boolean;
     allowUnsigned?: boolean;
     unset?: string;
   }
