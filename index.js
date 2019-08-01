@@ -243,7 +243,7 @@ function session(options) {
         return;
       }
 
-      if (!shouldSetCookie(req)) {
+      if (!shouldSetCookie(req, res, next)) {
         return;
       }
 
@@ -457,13 +457,13 @@ function session(options) {
     }
 
     // determine if cookie should be set on response
-    function shouldSetCookie(req) {
+    function shouldSetCookie(req, res, next) {
       // cannot set cookie without a session ID
       if (typeof req.sessionID !== 'string') {
         return false;
       }
 
-      if (skipCookie && skipCookie(req)) {
+      if (skipCookie && skipCookie(req, res, next)) {
         return false;
       }
 
