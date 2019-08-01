@@ -1,4 +1,4 @@
-1.15.9 / 2019-08-01
+1.15.10 / 2019-08-01
 ==========
 
   * Passes Express response and next function to `skipCookie` function
