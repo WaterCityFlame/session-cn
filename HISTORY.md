@@ -1,10 +1,18 @@
+1.16.0 / 2019-08-05
+===================
+
+  * Fix restoring `cookie.originalMaxAge` when store returns `Date`
+  * Fix error passing `data` option to `Cookie` constructor
+  * Fix uncaught error from bad session data
+  * deps: parseurl@~1.3.3
+
 1.15.10 / 2019-08-01
-==========
+====================
 
   * Passes Express response and next function to `skipCookie` function
 
 1.15.8 / 2019-04-01
-==========
+===================
 
   * Adds a number of custom legacy helpers
     - Export of signing functions for use outside module
@@ -21,6 +29,8 @@
     - Replace internal `eval` usage with `Function` constructor
     - Use instance methods on `process` to check for listeners
     - perf: remove argument reassignment
+  * deps: on-headers@~1.0.2
+    - Fix `res.writeHead` patch missing return value
 
 1.15.6 / 2017-09-26
 ===================
