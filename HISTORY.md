@@ -1,3 +1,8 @@
+1.16.1 / 2019-08-06
+===================
+
+  * Fix bug where unsigned cookies were not being properly URI decoded.
+
 1.16.0 / 2019-08-05
 ===================
 
