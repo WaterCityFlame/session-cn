@@ -897,7 +897,7 @@ describe('session()', function(){
       var accessToken;
       var secret = 's3cret';
 
-      var serverOptions = {secret, rolling: true};
+      var serverOptions = {secret: secret, rolling: true};
 
       var server = createServer(serverOptions, function(req, res) {
         if (accessToken) return res.end();
@@ -923,7 +923,7 @@ describe('session()', function(){
       var accessToken;
       var secret = 's3cret';
 
-      var serverOptions = {secret, rolling: true, allowUnsigned: true};
+      var serverOptions = {secret: secret, rolling: true, allowUnsigned: true};
 
       var server = createServer(serverOptions, function(req, res) {
         if (accessToken) return res.end();
@@ -958,7 +958,7 @@ describe('session()', function(){
       var accessToken;
       var secret = 's3cret';
 
-      var serverOptions = {secret, rolling: true};
+      var serverOptions = {secret: secret, rolling: true};
 
       var server = createServer(serverOptions, function(req, res) {
         if (accessToken) return res.end();
@@ -987,7 +987,7 @@ describe('session()', function(){
         return q ? q.split('accessToken=')[1] : undefined;
       };
 
-      var serverOptions = {secret, rolling: true, alternateTokenValue};
+      var serverOptions = {secret: secret, rolling: true, alternateTokenValue: alternateTokenValue};
 
       var server = createServer(serverOptions, function(req, res) {
         if (accessToken) return res.end();
