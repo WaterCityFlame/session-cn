@@ -1,5 +1,5 @@
 {
-  "version": "1.15.10",
+  "version": "1.16.0",
   "name": "express-session-cn",
   "description": "Simple session middleware for Express",
   "author": "Jordan Gignac <jordangdevelop@gmail.com>",
