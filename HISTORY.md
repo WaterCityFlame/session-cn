@@ -1,6 +1,9 @@
 1.16.0 / 2019-08-05
 ===================
 
+  * Fix bug where `alternateTokenValue` was sometimes not being called
+  * Export `getCookieValue` function to get cookie value for a given request
+  * Remove export of cookie signing functions and move closer to source
   * Fix restoring `cookie.originalMaxAge` when store returns `Date`
   * Fix error passing `data` option to `Cookie` constructor
   * Fix uncaught error from bad session data

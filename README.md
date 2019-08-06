@@ -7,7 +7,7 @@ there are only a few main goals of this fork which are as follows:
 - Ability to define alternate token locations when no cookie value found for interop
   with other methods of sending authentication.
 
-- Ability to determine whether a set cookie header should be returned to a client
+- Ability to determine whether a set-cookie header should be returned to a client
   based on information obtained from the request.
 
 - Expose some helper functions for dealing with sessions outside of the middleware.
@@ -15,9 +15,6 @@ there are only a few main goals of this fork which are as follows:
 - Allow unsigned cookie values to be processed for migrating user sessions.
 
 - Maintain accurate type information.
-
-Since the original library is in maintenance mode I will do my best to keep this
-library and type definition at feature parity and version match as best I can.
 
 ## Installation
 
@@ -259,8 +256,17 @@ authentication types while maintaining consistency.
 
 `request => string | null | undefined`
 
-The default value is `undefined` and it will be skipped unless a function is provided
-to the options object matching the above signature.
+The default value is a function that returns undefined.
+
+##### skipCookie
+
+Function that can skip the return of set-cookie headers to the client depending
+on request object values. This allows compatibility with other authentication
+types while maintaining consistency.
+
+`request => boolean`
+
+The default value is a function that returns false.
 
 ##### allowUnsigned
 
@@ -286,17 +292,6 @@ choose what is appropriate to your use-case.
 will add an empty Passport object to the session for use after a user is
 authenticated, which will be treated as a modification to the session, causing
 it to be saved. *This has been fixed in PassportJS 0.3.0*
-
-##### skipCookie
-
-Function that can skip the return of set cookie headers to the client depending
-on request object values. This allows compatibility with other authentication
-types while maintaining consistency.
-
-`request => boolean`
-
-The default value is `undefined` and it will be skipped unless a function is
-provided to the options object matching the above signature.
 
 ##### secret
 
@@ -452,6 +447,23 @@ The `req.session.cookie.originalMaxAge` property returns the original
 To get the ID of the loaded session, access the request property
 `req.sessionID`. This is simply a read-only value set when a session
 is loaded/created.
+
+## Exposed Helper Functions
+
+### getCookieValue
+
+Used to get the exact string that will be stored in the set-cookie header
+for a give request. This can be useful for interop with other authentication
+mechanisms where you may want to pass this value to another handler.
+
+```js
+var token = session.getCookieValue(req, name, secret)
+```
+
+This function will use the request to get the `sessionId` and cookie options
+while using the cookie name and secret for signing and serialization. NOTE: You can
+choose to omit the secret parameter which will default to the `req.secret` value
+set by the session middleware if you wish to use that.
 
 ## Session Store Implementation
 

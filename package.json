@@ -2,14 +2,14 @@
   "version": "1.15.10",
   "name": "express-session-cn",
   "description": "Simple session middleware for Express",
-  "author": "Jordan Gignac <jordangdevelop@gmail.com> (https://jordang.dev)",
+  "author": "Jordan Gignac <jordangdevelop@gmail.com>",
+  "repository": "jordangignac/session-cn",
+  "license": "MIT",
   "contributors": [
     "Douglas Christopher Wilson <doug@somethingdoug.com>",
     "Jordan Gignac <jordangdevelop@gmail.com>",
     "Joe Wagner <njwjs722@gmail.com>"
   ],
-  "repository": "jordangignac/session-cn",
-  "license": "MIT",
   "dependencies": {
     "cookie": "0.3.1",
     "cookie-signature": "1.0.6",

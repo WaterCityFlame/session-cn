@@ -891,6 +891,145 @@ describe('session()', function(){
     });
   });
 
+  describe('allowUnsigned option', function() {
+    it('should default to false', function(done) {
+      var sessionId;
+      var accessToken;
+      var secret = 's3cret';
+
+      var serverOptions = {secret, rolling: true};
+
+      var server = createServer(serverOptions, function(req, res) {
+        if (accessToken) return res.end();
+        accessToken = session.getCookieValue(req, 'connect.sid', secret);
+        sessionId = req.sessionID;
+        return res.end();
+      });
+
+      request(server)
+        .get('/')
+        .expect(200, function(err) {
+          if (err) done(err);
+          request(server)
+            .get('/')
+            .set('Cookie', ['connect.sid=' + sessionId])
+            .expect(shouldSetCookieToDifferentSessionId(sessionId))
+            .expect(200, done);
+        });
+    });
+
+    it('should allow unsigned values when set to true', function(done) {
+      var sessionId;
+      var accessToken;
+      var secret = 's3cret';
+
+      var serverOptions = {secret, rolling: true, allowUnsigned: true};
+
+      var server = createServer(serverOptions, function(req, res) {
+        if (accessToken) return res.end();
+        accessToken = session.getCookieValue(req, 'connect.sid', secret);
+        sessionId = req.sessionID;
+        return res.end();
+      });
+
+      request(server)
+        .get('/')
+        .expect(200, function(err) {
+          if (err) done(err);
+          request(server)
+            .get('/')
+            .set('Cookie', ['connect.sid=' + sessionId])
+            .expect(shouldSetCookieToValue('connect.sid', accessToken))
+            .expect(200, done);
+        });
+    });
+  });
+
+  describe('alternateTokenValue option', function() {
+    it('should reject non-function values', function() {
+      assert.throws(
+        session.bind(null, {alternateTokenValue: 'bogus!'}),
+        /alternateTokenValue.*must/
+      );
+    });
+
+    it('should ignore alternate locations and return undefined when not set', function(done) {
+      var sessionId;
+      var accessToken;
+      var secret = 's3cret';
+
+      var serverOptions = {secret, rolling: true};
+
+      var server = createServer(serverOptions, function(req, res) {
+        if (accessToken) return res.end();
+        accessToken = session.getCookieValue(req, 'connect.sid', secret);
+        sessionId = req.sessionID;
+        return res.end();
+      });
+
+      request(server)
+        .get('/')
+        .expect(200, function(err) {
+          if (err) done(err);
+          request(server)
+            .get('/?accessToken=' + accessToken)
+            .expect(shouldSetCookieToDifferentSessionId(sessionId))
+            .expect(200, done);
+        });
+    });
+
+    it('should get cookie value from supplied function when available', function(done) {
+      var accessToken;
+      var secret = 's3cret';
+
+      var alternateTokenValue = function(req) {
+        var q = decodeURIComponent(req.url.split('?')[1]);
+        return q ? q.split('accessToken=')[1] : undefined;
+      };
+
+      var serverOptions = {secret, rolling: true, alternateTokenValue};
+
+      var server = createServer(serverOptions, function(req, res) {
+        if (accessToken) return res.end();
+        accessToken = session.getCookieValue(req, 'connect.sid', secret);
+        return res.end();
+      });
+
+      request(server)
+        .get('/')
+        .expect(200, function(err) {
+          if (err) done(err);
+          request(server)
+            .get('/?accessToken=' + accessToken)
+            .expect(shouldSetCookieToValue('connect.sid', accessToken))
+            .expect(200, done);
+        });
+    });
+  });
+
+  describe('skipCookie option', function() {
+    it('should reject non-function values', function() {
+      assert.throws(
+        session.bind(null, {skipCookie: 'bogus!'}),
+        /skipCookie.*must/
+      );
+    });
+
+    it('should default to false', function(done) {
+      request(createServer())
+        .get('/')
+        .expect(shouldSetCookie('connect.sid'))
+        .expect(200, done);
+    });
+
+    it('should not set cookie when function returns true', function(done) {
+      request(createServer({skipCookie: () => true}))
+        .get('/')
+        .expect(shouldNotHaveHeader('Set-Cookie'))
+        .expect(200, done);
+    });
+  });
+
   describe('key option', function(){
     it('should default to "connect.sid"', function(done){
       request(createServer())

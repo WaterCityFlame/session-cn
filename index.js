@@ -52,8 +52,7 @@ exports.MemoryStore = MemoryStore;
  * Expose helper functions.
  */
 
-exports.signCookie = signcookie;
-exports.unsignCookie = unsigncookie;
+exports.getCookieValue = getCookieValue
 
 /**
  * Warning message for `MemoryStore` usage in production.
@@ -77,20 +76,20 @@ var defer = typeof setImmediate === 'function'
 /**
  * Setup session store with the given `options`.
  *
- * @param {Object} [options] Config options
+ * @param {Object} [options]
  * @param {Object} [options.cookie] Options for cookie
- * @param {Function} [options.genid] Function for generating new session ids
+ * @param {Function} [options.genid]
  * @param {String} [options.name=connect.sid] Session ID cookie name
- * @param {Boolean} [options.proxy] Sets the reverse proxy trust level when using secure cookies
+ * @param {Boolean} [options.proxy]
  * @param {Boolean} [options.resave] Resave unmodified sessions back to the store
  * @param {Boolean} [options.rolling] Enable/disable rolling session expiration
- * @param {Function} [options.alternateTokenValue] Function for fetching alternate token value
  * @param {Boolean} [options.allowUnsigned] Enable/disable allowing unsigned sessions
- * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
+ * @param {Function} [options.alternateTokenValue] Function for fetching alternate token value
  * @param {Function} [options.skipCookie] Function to determine if a cookie should be returned
+ * @param {Boolean} [options.saveUninitialized] Save uninitialized sessions to the store
  * @param {String|Array} [options.secret] Secret for signing session ID
  * @param {Object} [options.store=MemoryStore] Session store
- * @param {String} [options.unset] Define how to handle session data when req.session is unset
+ * @param {String} [options.unset]
  * @return {Function} middleware
  * @public
  */
@@ -119,23 +118,39 @@ function session(options) {
   // get the rolling session option
   var rollingSessions = Boolean(opts.rolling)
 
-  // get the alternate token value function option
-  var alternateTokenValue = opts.alternateTokenValue;
-
   // get the allow unsigned session option
-  var allowUnsigned = opts.allowUnsigned || false;
+  var allowUnsigned = Boolean(opts.allowUnsigned);
+
+  // get the alternate token value function option
+  var alternateTokenValue =
+    opts.alternateTokenValue ||
+    function() {
+      return undefined;
+    };
+
+  // get the skip cookie function option
+  var skipCookie =
+    opts.skipCookie ||
+    function() {
+      return false;
+    };
 
   // get the save uninitialized session option
   var saveUninitializedSession = opts.saveUninitialized
-
-  // get the skip cookie function option
-  var skipCookie = opts.skipCookie;
 
   // get the cookie signing secret
   var secret = opts.secret
 
   if (typeof generateId !== 'function') {
     throw new TypeError('genid option must be a function');
+  }
+
+  if (typeof alternateTokenValue !== 'function') {
+    throw new TypeError('alternateTokenValue option must be a function');
+  }
+
+  if (typeof skipCookie !== 'function') {
+    throw new TypeError('skipCookie option must be a function');
   }
 
   if (resaveSession === undefined) {
@@ -476,7 +491,8 @@ function session(options) {
         return false;
       }
 
-      if (skipCookie && skipCookie(req, res, next)) {
+      // check if cookie should be set for this specific request
+      if (skipCookie(req, res, next)) {
         return false;
       }
 
@@ -550,13 +566,9 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
 
     raw = cookies[name];
 
-    if (!raw && alternateTokenValue) {
-      raw = alternateTokenValue(req);
-    }
-
     if (raw) {
       if (raw.substr(0, 2) === 's:') {
-        val = unsigncookie(raw, secrets);
+        val = unsigncookie(raw.slice(2), secrets);
 
         if (val === false) {
           debug('cookie signature invalid');
@@ -564,6 +576,7 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
         }
       } else {
         debug('cookie unsigned')
+        if (allowUnsigned) return raw;
       }
     }
   }
@@ -583,7 +596,7 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
 
     if (raw) {
       if (raw.substr(0, 2) === 's:') {
-        val = unsigncookie(raw, secrets);
+        val = unsigncookie(raw.slice(2), secrets);
 
         if (val) {
           deprecate('cookie should be available in req.headers.cookie');
@@ -595,11 +608,31 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
         }
       } else {
         debug('cookie unsigned')
+        if (allowUnsigned) return raw;
       }
     }
   }
 
-  return allowUnsigned ? val || raw : val;
+  // compat read from alternate token location
+  if (!val) {
+    raw = alternateTokenValue(req);
+
+    if (raw) {
+      if (raw.substr(0, 2) === 's:') {
+        val = unsigncookie(raw.slice(2), secrets);
+
+        if (val === false) {
+          debug('alternate value signature invalid');
+          val = undefined;
+        }
+      } else {
+        debug('alternate value unsigned')
+        if (allowUnsigned) return raw;
+      }
+    }
+  }
+
+  return val;
 }
 
 /**
@@ -670,7 +703,7 @@ function issecure(req, trustProxy) {
  */
 
 function setcookie(res, name, val, secret, options) {
-  var signed = signcookie(val, secret);
+  var signed = 's:' + signature.sign(val, secret);
   var data = cookie.serialize(name, signed, options);
 
   debug('set-cookie %s', data);
@@ -687,13 +720,11 @@ function setcookie(res, name, val, secret, options) {
  * @param {String} val
  * @param {Array} secrets
  * @returns {String|Boolean}
- * @public
+ * @private
  */
-
 function unsigncookie(val, secrets) {
-  var str = val.slice(2);
   for (var i = 0; i < secrets.length; i++) {
-    var result = signature.unsign(str, secrets[i]);
+    var result = signature.unsign(val, secrets[i]);
 
     if (result !== false) {
       return result;
@@ -704,14 +735,18 @@ function unsigncookie(val, secrets) {
 }
 
 /**
- * Sign the given `val` with `secret`.
+ * Return string request cookie value for supplied cookie name
  *
- * @param {String} val
- * @param {String} secret
- * @returns {String}
- * @public
+ * @param {Request} req Express request object
+ * @param {String} name Cookie name value
+ * @param {String} secret Cookie secret
  */
+function getCookieValue(req, name, secret) {
+  var signed = 's:' + signature.sign(req.sessionID, secret || req.secret);
+  var data = cookie.serialize(name, signed, req.session.cookie.data);
+  var val = data.split('=')[1].split(';')[0];
 
-function signcookie(val, secret) {
-  return 's:' + signature.sign(val, secret);
+  debug('get cookie value %s', val);
+
+  return val;
 }

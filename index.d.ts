@@ -1,11 +1,11 @@
-// TypeScript Version: 2.2
-// Type definitions for express-session-cn 1.15
-// Project: https://www.npmjs.org/package/express-session-cn
-// Definitions by: Jordan Gignac <https://github.com/jordangignac>
-//                 Hiroki Horiuchi <https://github.com/horiuchi>
+// Type definitions for express-session-cn 1.16
+// Project: https://github.com/jordangignac/session-cn
+// Definitions by: Hiroki Horiuchi <https://github.com/horiuchi>
 //                 Jacob Bogers <https://github.com/jacobbogers>
 //                 Naoto Yokoyama <https://github.com/builtinnya>
 //                 Ryan Cannon <https://github.com/ry7n>
+//                 Jordan Gignac <https://github.com/jordangignac>
+// TypeScript Version: 2.2
 
 /// <reference types="node" />
 
@@ -45,7 +45,7 @@ declare global {
       destroy(callback: (err: any) => void): void;
       reload(callback: (err: any) => void): void;
       save(callback: (err: any) => void): void;
-      touch(callback: (err: any) => void): void;
+      touch(): void;
       cookie: SessionCookie;
     }
   }
@@ -104,8 +104,7 @@ declare namespace session {
     touch: (sid: string, session: Express.SessionData, callback?: (err?: any) => void) => void;
   }
 
-  function unsignCookie(val: string, secrets: string[]): string;
-  function signCookie(val: string, secret: string): string;
+  function getCookieValue(req: express.Request, name: string, secret?: string): string;
 }
 
 export = session;
