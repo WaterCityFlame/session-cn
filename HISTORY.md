@@ -1,3 +1,8 @@
+1.16.2 / 2019-08-06
+===================
+
+  * Revert previous mistakenly made changes for the sake of purity.
+
 1.16.1 / 2019-08-06
 ===================
 
