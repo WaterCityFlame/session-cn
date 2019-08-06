@@ -1023,7 +1023,7 @@ describe('session()', function(){
     });
 
     it('should not set cookie when function returns true', function(done) {
-      request(createServer({skipCookie: () => true}))
+      request(createServer({skipCookie: function() { return true }}))
         .get('/')
         .expect(shouldNotHaveHeader('Set-Cookie'))
         .expect(200, done);
