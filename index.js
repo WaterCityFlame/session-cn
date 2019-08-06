@@ -576,7 +576,7 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
         }
       } else {
         debug('cookie unsigned')
-        if (allowUnsigned) return decodeURIComponent(raw);
+        if (allowUnsigned) return raw;
       }
     }
   }
@@ -608,7 +608,7 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
         }
       } else {
         debug('cookie unsigned')
-        if (allowUnsigned) return decodeURIComponent(raw);
+        if (allowUnsigned) return raw;
       }
     }
   }
@@ -626,8 +626,8 @@ function getcookie(req, name, secrets, allowUnsigned, alternateTokenValue) {
           val = undefined;
         }
       } else {
-        debug('cookie unsigned')
-        if (allowUnsigned) return decodeURIComponent(raw);
+        debug('alternate value unsigned')
+        if (allowUnsigned) return raw;
       }
     }
   }
