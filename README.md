@@ -465,6 +465,12 @@ while using the cookie name and secret for signing and serialization. NOTE: You 
 choose to omit the secret parameter which will default to the `req.secret` value
 set by the session middleware if you wish to use that.
 
+### unsigncookie
+
+Attempts to unsign the value using the secret values provided. If the value
+was successfully unsigned using one of the provided secrets, the result is
+returned. Otherwise, `false` is returned.
+
 ## Session Store Implementation
 
 Every session store _must_ be an `EventEmitter` and implement specific
