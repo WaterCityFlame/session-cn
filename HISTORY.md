@@ -1,3 +1,8 @@
+1.16.3 / 2020-01-03
+===================
+
+  * Add public export of unsigncookie helper function
+
 1.16.2 / 2019-08-06
 ===================
 
