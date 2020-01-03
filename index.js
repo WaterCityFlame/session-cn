@@ -53,6 +53,7 @@ exports.MemoryStore = MemoryStore;
  */
 
 exports.getCookieValue = getCookieValue
+exports.unsigncookie = unsigncookie
 
 /**
  * Warning message for `MemoryStore` usage in production.
@@ -723,6 +724,10 @@ function setcookie(res, name, val, secret, options) {
  * @private
  */
 function unsigncookie(val, secrets) {
+  if (val.substr(0, 2) === 's:') {
+    val = val.slice(2);
+  }
+
   for (var i = 0; i < secrets.length; i++) {
     var result = signature.unsign(val, secrets[i]);
 
