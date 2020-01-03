@@ -105,6 +105,7 @@ declare namespace session {
   }
 
   function getCookieValue(req: express.Request, name: string, secret?: string): string;
+  function unsigncookie(val: string, secrets: string[]): string | boolean;
 }
 
 export = session;
