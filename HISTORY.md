@@ -1,10 +1,29 @@
-1.16.3 / 2020-01-03
-===================
+unreleased in session package
+=============================
+
+  * Fix `res.end` patch to always commit headers
+  * deps: cookie@0.4.1
+  * deps: safe-buffer@5.2.1
+
+1.17.1 / 2020-04-16 in session package
+======================================
+
+  * Fix internal method wrapping error on failed reloads
+
+1.17.0 / 2019-10-10 in session package
+======================================
+
+  * deps: cookie@0.4.0
+    - Add `SameSite=None` support
+  * deps: safe-buffer@5.2.0
+
+1.16.3 / 2020-01-03 in session-cn package
+=========================================
 
   * Add public export of unsigncookie helper function
 
-1.16.2 / 2019-08-06
-===================
+1.16.2 / 2019-08-06 in session-cn package
+=========================================
 
   * Revert previous mistakenly made changes for the sake of purity.
 

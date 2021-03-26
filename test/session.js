@@ -482,7 +482,7 @@ describe('session()', function(){
           .get('/')
           .set('Cookie', cookie(res))
           .expect(shouldSetCookie('connect.sid'))
-          .expect(shouldSetCookieToDifferentSessionId(res))
+          .expect(shouldSetCookieToDifferentSessionId(sid(res)))
           .expect(200, 'session 2', done)
         })
       })
@@ -1588,6 +1588,42 @@ describe('session()', function(){
       .get('/')
       .expect(200, 'hello, world', done)
     })
+
+    it('should error when res.end is called twice', function (done) {
+      var error1 = null
+      var error2 = null
+      var server = http.createServer(function (req, res) {
+        res.end()
+
+        try {
+          res.setHeader('Content-Length', '3')
+          res.end('foo')
+        } catch (e) {
+          error1 = e
+        }
+      })
+
+      function respond (req, res) {
+        res.end()
+
+        try {
+          res.setHeader('Content-Length', '3')
+          res.end('foo')
+        } catch (e) {
+          error2 = e
+        }
+      }
+
+      request(server)
+        .get('/')
+        .end(function (err, res) {
+          if (err) return done(err)
+          request(createServer(null, respond))
+            .get('/')
+            .expect(function () { assert.strictEqual((error1 && error1.message), (error2 && error2.message)) })
+            .expect(res.statusCode, res.text, done)
+        })
+    })
   })
 
   describe('req.session', function(){
@@ -1816,6 +1852,49 @@ describe('session()', function(){
           .expect(500, 'failed to load session', done)
         })
       })
+
+      it('should not override an overriden `reload` in case of errors',  function (done) {
+        var store = new session.MemoryStore()
+        var server = createServer({ store: store, resave: false }, function (req, res) {
+          if (req.url === '/') {
+            req.session.active = true
+            res.end('session created')
+            return
+          }
+
+          store.clear(function (err) {
+            if (err) return done(err)
+
+            // reload way too many times on top of each other,
+            // attempting to overflow the call stack
+            var iters = 20
+            reload()
+            function reload () {
+              if (!--iters) {
+                res.end('ok')
+                return
+              }
+
+              try {
+                req.session.reload(reload)
+              } catch (e) {
+                res.statusCode = 500
+                res.end(e.message)
+              }
+            }
+          })
+        })
+
+        request(server)
+          .get('/')
+          .expect(200, 'session created', function (err, res) {
+            if (err) return done(err)
+            request(server)
+              .get('/foo')
+              .set('Cookie', cookie(res))
+              .expect(200, 'ok', done)
+          })
+      })
     })
 
     describe('.save()', function () {
@@ -1988,6 +2067,21 @@ describe('session()', function(){
           .expect(shouldSetCookieToValue('previous', 'cookieValue'))
           .expect(200, done)
         })
+
+        it('should preserve cookies set in writeHead', function (done) {
+          var server = createServer(null, function (req, res) {
+            var cookie = new Cookie()
+            res.writeHead(200, {
+              'Set-Cookie': cookie.serialize('previous', 'cookieValue')
+            })
+            res.end()
+          })
+
+          request(server)
+            .get('/')
+            .expect(shouldSetCookieToValue('previous', 'cookieValue'))
+            .expect(200, done)
+        })
       })
 
       describe('.originalMaxAge', function () {
@@ -1998,7 +2092,13 @@ describe('session()', function(){
 
           request(server)
             .get('/')
-            .expect(200, '2000', done)
+            .expect(200)
+            .expect(function (res) {
+              // account for 1ms latency
+              assert.ok(res.text === '2000' || res.text === '1999',
+                'expected 2000, got ' + res.text)
+            })
+            .end(done)
         })
 
         it('should equal original maxAge for all requests', function (done) {
@@ -2008,13 +2108,25 @@ describe('session()', function(){
 
           request(server)
             .get('/')
-            .expect(200, '2000', function (err, res) {
+            .expect(200)
+            .expect(function (res) {
+              // account for 1ms latency
+              assert.ok(res.text === '2000' || res.text === '1999',
+                'expected 2000, got ' + res.text)
+            })
+            .end(function (err, res) {
               if (err) return done(err)
               setTimeout(function () {
                 request(server)
                   .get('/')
                   .set('Cookie', cookie(res))
-                  .expect(200, '2000', done)
+                  .expect(200)
+                  .expect(function (res) {
+                    // account for 1ms latency
+                    assert.ok(res.text === '2000' || res.text === '1999',
+                      'expected 2000, got ' + res.text)
+                  })
+                  .end(done)
               }, 100)
             })
         })
@@ -2027,13 +2139,25 @@ describe('session()', function(){
 
           request(server)
             .get('/')
-            .expect(200, '2000', function (err, res) {
+            .expect(200)
+            .expect(function (res) {
+              // account for 1ms latency
+              assert.ok(res.text === '2000' || res.text === '1999',
+                'expected 2000, got ' + res.text)
+            })
+            .end(function (err, res) {
               if (err) return done(err)
               setTimeout(function () {
                 request(server)
                   .get('/')
                   .set('Cookie', cookie(res))
-                  .expect(200, '2000', done)
+                  .expect(200)
+                  .expect(function (res) {
+                    // account for 1ms latency
+                    assert.ok(res.text === '2000' || res.text === '1999',
+                      'expected 2000, got ' + res.text)
+                  })
+                  .end(done)
               }, 100)
             })
         })
